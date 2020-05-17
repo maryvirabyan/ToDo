@@ -1,0 +1,258 @@
+Mary Virabyan:
+from tkinter import *
+import datetime
+
+import random
+
+window = Tk()
+window.title("IdeaList")
+window.geometry("620x550")
+window.configure(bg="#EAF2F8")
+window.resizable(True, True)
+
+lb_tasks = Listbox(window)
+lb_tasks.grid(row=2, column=1, rowspan=7)
+tasks = []
+
+lb_notes = Listbox(window)
+lb_notes.grid(row=2, column=2, rowspan=7)
+notes = []
+
+lb_dates = Listbox(window)
+lb_dates.grid(row=2, column=3, rowspan=7)
+dates = []
+
+lb_tasks_done = Listbox(window)
+lb_tasks_done.grid(row=15, column=1, rowspan=4)
+tasks_done = []
+
+lb_notes_done = Listbox(window)
+lb_notes_done.grid(row=15, column=2, rowspan=4)
+notes_done = []
+
+lb_dates_done = Listbox(window)
+lb_dates_done.grid(row=15, column=3, rowspan=4)
+dates_done = []
+
+
+def clear_listbox():
+    lb_tasks.delete(0, "end")
+    lb_notes.delete(0, "end")
+    lb_dates.delete(0, "end")
+
+
+def update_listbox():
+    clear_listbox()
+    for task in tasks:
+        lb_tasks.insert("end", task)
+    for note in notes:
+        lb_notes.insert("end", note)
+    for date in dates:
+        lb_dates.insert("end", date)
+
+
+def add_task():
+    task = text_input.get()
+    note_text = note_input.get()
+    date_text = date_input.get()
+    if task != "" and task != "task name":
+        if date_text != "" and date_text != "mm-dd-yyyy":
+            if(len(date_text.split("-"))== 3):
+                m, d, y = date_text.split("-")
+                try:
+                    if(not(datetime.datetime(int(y), int(m), int(d))))  :
+                        lbl_display["text"] = "Invalid date"
+                        return 0
+
+                except ValueError:
+                    lbl_display["text"] = "Invalid date"
+                    return 0
+                else:
+                    dates.append(date_text)
+            else:
+                lbl_display["text"] = "Invalid date"
+                return 0
+        else:
+            dates.append("-")
+        if note_text != "" and note_text != "some notes":
+            notes.append(note_text)
+        else:
+            notes.append("-")
+        tasks.append(task)
+        update_listbox()
+    else:
+        lbl_display["text"] = "Please enter a task"
+    text_input.delete(0, "end")
+    date_input.delete(0, "end")
+    note_input.delete(0, "end")
+    text_input.insert(0, "task name")
+    note_input.insert(0, "some notes")
+    date_input.insert(0, "mm-dd-yyyy")
+
+
+def delete_selected():
+    sel_task = lb_tasks.get(lb_tasks.curselection())
+    sel_index = tasks.index(sel_task)
+    tasks.remove(sel_task)
+    notes.pop(sel_index)
+    dates.pop(sel_index)
+    lb_tasks.delete(ANCHOR)
+    update_listbox()
+
+
+def del_all():
+    global tasks
+    global notes
+    global dates
+    tasks = []
+    notes = []
+    dates = []
+    update_listbox()
+
+
+def choose_random():
+    task = random.choice(tasks)
+    lbl_display["text"] = task
+
+
+def number_of_tasks():
+    num_of_tasks = len(tasks)
+    lbl_display["text"] = "Number of tasks: %s" % num_of_tasks
+
+
+def clear_entry(event, entry):
+    if entry.winfo_name() == '!entry':
+        if entry.get() == 'task name':
+            entry.delete(0, 'end')
+    elif entry.winfo_name() == '!entry2':
+        if entry.get() == 'some notes':
+            entry.delete(0, 'end')
+    elif entry.winfo_name() == '!entry3':
+        if entry.get() == 'mm-dd-yyyy':
+            entry.delete(0, 'end')
+    return None
+
+
+def SortByDeadline():
+    from datetime import datetime
+    global tasks
+    global notes
+    global dates
+    indx = 0
+    datelist = []
+    withoutDate = []
+    datedict = dict()
+
+    for date in dates:
+        if date != "-":
+            datetime_object = datetime.strptime(date, '%m-%d-%Y').date()
+            datelist.append(datetime_object)
+            datedict.update({datetime_object: indx})
+            print()
+            indx += 1
+        else:
+            withoutDate.append(indx)
+            print(withoutDate)
+            indx += 1
+    datelist = sorted(datelist)
+    print(datedict)
+    print(datelist)
+    tasks1 = []
+    notes1 = []
+    dates1 = []
+    for item in datelist:
+        tasks1.append(tasks[datedict.get(item)])
+        notes1.append(notes[datedict.g
+
+et(item)])
+        dates1.append(dates[datedict.get(item)])
+    for item in withoutDate:
+        tasks1.append(tasks[item])
+        notes1.append(notes[item])
+        dates1.append(dates[item])
+    tasks = tasks1
+    notes = notes1
+    dates = dates1
+    update_listbox()
+
+
+def Done():
+    sel_task = lb_tasks.get(lb_tasks.curselection())
+    sel_index = tasks.index(sel_task)
+    tasks_done.append(sel_task)
+    dates_done.append(dates[sel_index])
+    notes_done.append(notes[sel_index])
+    tasks.remove(sel_task)
+    notes.pop(sel_index)
+    dates.pop(sel_index)
+    lb_tasks.delete(ANCHOR)
+    update_listbox()
+    lb_tasks_done.delete(0, "end")
+    lb_notes_done.delete(0, "end")
+    lb_dates_done.delete(0, "end")
+    for task in tasks_done:
+        lb_tasks_done.insert("end", task)
+    for note in notes_done:
+        lb_notes_done.insert("end", note)
+    for date in dates_done:
+        lb_dates_done.insert("end", date)
+
+
+def RemoveAll():
+    global tasks_done
+    global notes_done
+    global dates_done
+    tasks_done = []
+    notes_done = []
+    dates_done = []
+    lb_tasks_done.delete(0, "end")
+    lb_notes_done.delete(0, "end")
+    lb_dates_done.delete(0, "end")
+
+label = Label(window, text="Create your to do list", font=("Impact", 28), fg="#154360", bg="#EAF2F8")
+label.grid(row=0, column=0, columnspan=2)
+lbl_display = Label(window, text="Make new task", font=("Impact", 12), fg="#154360", bg="#EAF2F8")
+lbl_display.grid(row=1, column=0)
+
+text_input = Entry(window, width=20)
+text_input.grid(row=1, column=1)
+note_input = Entry(window, width=20)
+note_input.grid(row=1, column=2)
+date_input = Entry(window, width=20)
+date_input.grid(row=1, column=3)
+
+text_input.insert(0, "task name")
+text_input.bind("<Button-1>", lambda event: clear_entry(event, text_input))
+note_input.insert(0, "some notes")
+note_input.bind("<Button-1>", lambda event: clear_entry(event, note_input))
+date_input.insert(0, "mm-dd-yyyy")
+date_input.bind("<Button-1>", lambda event: clear_entry(event, date_input))
+
+btn_add_task = Button(window, width=16, height=1, text="Add task", fg="black", command=add_task, bg="#D4E6F1")
+btn_del_all = Button(window, width=16, height=1, text="Delete all", fg="black", command=del_all, bg="#D4E6F1")
+btn_del_one = Button(window, width=16, height=1, text="Delete selected task", fg="black", command=delete_selected,
+                     bg="#D4E6F1")
+btn_choose_random = Button(window, width=16, height=1, text="Choose random", fg="black", command=choose_random,
+                           bg="#D4E6F1")
+btn_number_of_tasks = Button(window, width=16, height=1, text="Number of tasks", fg="black", command=number_of_tasks,
+                             bg="#D4E6F1")
+btn_sort_by_deadline = Button(window, width=16, height=1, text="Sort by deadline", fg="black", command=SortByDeadline,
+                              bg="#D4E6F1")
+btn_done = Button(window, width=16, height=1, text="Done", fg="black", command=Done,
+                              bg="#D4E6F1")
+btn_remove = Button(window, width=16, height=1, text="Remove all", fg="black", command=RemoveAll,
+                              bg="#D4E6F1")
+btn_add_task.grid(row=2, column=0)
+btn_done.grid(row=3, column=0)
+btn_del_one.grid(row=4, column=0)
+btn_del_all.grid(row=5, column=0)
+btn_sort_by_deadline.grid(row=6, column=0)
+btn_choose_random.grid(row=7, column=0)
+btn_number_of_tasks.grid(row=8, column=0)
+
+label = Label(window, text="", font=("Impact", 30), fg="#154360", bg="#EAF2F8")
+label.grid(row=9, column=0, columnspan=6)
+btn_remove.grid(row=16, column=0)
+label = Label(window, text="Completed tasks!!!", font=("Impact", 12), fg="#154360", bg="#EAF2F8")
+label.grid(row=10, column=0, columnspan=1)
+window.mainloop()
