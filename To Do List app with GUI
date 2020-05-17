@@ -162,9 +162,7 @@ def SortByDeadline():
     dates1 = []
     for item in datelist:
         tasks1.append(tasks[datedict.get(item)])
-        notes1.append(notes[datedict.g
-
-et(item)])
+        notes1.append(notes[datedict.get(item)])
         dates1.append(dates[datedict.get(item)])
     for item in withoutDate:
         tasks1.append(tasks[item])
