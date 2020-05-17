@@ -1,4 +1,3 @@
-Mary Virabyan:
 from tkinter import *
 import datetime
 
